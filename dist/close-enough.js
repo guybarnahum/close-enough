@@ -1135,7 +1135,7 @@ Head.defaults = {
  */
 Head.prototype.render = function() {
 
-  this.crossOrigin = "Anonymous";
+  this.crossOrigin = 'Anonymous';
 
   var maquette = this.maquette;
   var palette = this.palette;
@@ -1369,6 +1369,8 @@ Maquette.prototype.render = function() {
   } else {
     source = this.source;
   }
+
+  source.crossOrigin = 'Anonymous';
 
   this.canvas.width = width;
   this.canvas.height = height;
