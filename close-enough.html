@@ -1,85 +1,40 @@
 <html>
 <head>
-<script src="https://code.jquery.com/jquery-3.6.3.min.js" 
-integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" 
-crossorigin="anonymous"></script>
-<script src="dist/close-enough.js"> </script> 
-<style>
-
-.blink {
-  animation: blinker 3s infinite;
-}
-      
-@keyframes blinker {
-  from { opacity: 0; }
-  50% { opacity: 1; }
-  to { opacity: 0; }
-}
-
-.overlay {
-  
-  background: rgba(57, 57, 57, 0.5);
-  color: whitesmoke;
-
-  /* center overlay text */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: absolute; 
-  padding: 2rem;
-}
-
-.fade {
-  opacity:0;
-  transition: all .3s ease-in-out;
-  backdrop-filter: blur(8px) brightness(80%);
-}
-
-.wrapper:hover .fade{
-  opacity:1; 
-}
-
-.wrapper{
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.wrapper img,canvas{
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-</style>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+  <script src="dist/close-enough.js"> </script> 
+  <script src="before-after.js"></script>
+  <link rel="stylesheet" href="before-after.css">
 </head>
 <body>
 
-<span class="blink"><h1>Close Enough</h1></span>
+<div id="compare-before-after" class="bal-container">
 
-<div class="wrapper">
-  <img src="" style="display:none;"/>
-  <canvas id="canvas"></canvas>
-  <div class="overlay fade">
-    <h1>Image title</h1> 
+  <div class="wrapper bal-before">
+    <div class="bal-before-inset">
+      <img src="./big-head.jpg"/>
+      <div class="bal-beforePosition beforeLabel">
+        Before
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="wrapper">
-  <img src="./big-head.jpg"/>
+  <div class="wrapper bal-after">
+    <img src="" style="display:none;"/>
+    <canvas id="canvas"></canvas>
+    <div class="bal-afterPosition afterLabel">
+      After
+    </div>
+  </div>
+
+  <div class="bal-handle">
+    <span class="handle-left-arrow"></span>
+    <span class="handle-right-arrow"></span>
+  </div>
 </div>
 
 <script>
 
-$('<img>').one('load', function(event) {
-
-var style = new window.CloseEnough.style.Blobs({
-      depth: 3,
-      palette: new window.CloseEnough.palette.Lab()
-    });
+// ....................................................................... Args
 
 let size  = 16;
 let scale =  1;
@@ -89,6 +44,15 @@ const urlParams = new URLSearchParams(queryString);
 
 size  = urlParams.get('size' ) || size;
 scale = urlParams.get('scale') || scale;
+
+// ............................................................... Close Enough
+
+$('<img>').one('load', function(event) {
+
+var style = new window.CloseEnough.style.Blobs({
+      depth: 3,
+      palette: new window.CloseEnough.palette.Lab()
+    });
 
 new CloseEnough.Head(this, {
     canvas: $('canvas')[0],
@@ -101,6 +65,13 @@ new CloseEnough.Head(this, {
   }).render();
 })[0].src = './big-head.jpg';
 
+// ............................................................. Before & After
+
+new BeforeAfter({
+  id: '#compare-before-after'
+});
+
 </script>
+
 </body>
 </html>
