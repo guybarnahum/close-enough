@@ -1350,7 +1350,8 @@ Maquette.prototype.render = function() {
 
     source = this._canvas;
     context = this._context;
-
+    source.crossOrigin = 'Anonymous';
+    
     // Size source
     source.width = width;
     source.height = height;
@@ -1368,9 +1369,8 @@ Maquette.prototype.render = function() {
 
   } else {
     source = this.source;
+    source.crossOrigin = 'Anonymous';
   }
-
-  source.crossOrigin = 'Anonymous';
 
   this.canvas.width = width;
   this.canvas.height = height;
