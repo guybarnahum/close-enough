@@ -47,7 +47,12 @@ scale = urlParams.get('scale') || scale;
 
 // ............................................................... Close Enough
 
-$('<img>').one('load', function(event) {
+let img = new Image();
+img.onload = function(event) {
+
+// $('<img>').one('load', function(event) {
+
+  this.crossOrigin = 'Anonymous';
 
 var style = new window.CloseEnough.style.Blobs({
       depth: 3,
@@ -63,7 +68,11 @@ new CloseEnough.Head(this, {
     },
     style: style
   }).render();
-})[0].src = './big-head.jpg';
+//})[0].src = './big-head.jpg';
+}
+
+img.src = './big-head.jpg';
+img.crossOrigin = 'Anonymous';
 
 // ............................................................. Before & After
 

@@ -1135,8 +1135,6 @@ Head.defaults = {
  */
 Head.prototype.render = function() {
 
-  this.crossOrigin = 'Anonymous';
-
   var maquette = this.maquette;
   var palette = this.palette;
   var style = this.style;
@@ -1152,6 +1150,7 @@ Head.prototype.render = function() {
   var size = this.config.size;
   var rgba = maquette.getImageData().data;
   var rgb;
+
 
   // Reset canvas
   this.canvas.width = this.width;
@@ -1350,8 +1349,7 @@ Maquette.prototype.render = function() {
 
     source = this._canvas;
     context = this._context;
-    source.crossOrigin = 'Anonymous';
-    
+
     // Size source
     source.width = width;
     source.height = height;
@@ -1369,7 +1367,6 @@ Maquette.prototype.render = function() {
 
   } else {
     source = this.source;
-    source.crossOrigin = 'Anonymous';
   }
 
   this.canvas.width = width;
