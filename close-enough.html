@@ -1,26 +1,44 @@
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
   <script src="dist/close-enough.js"> </script> 
   <script src="before-after.js"></script>
   <link rel="stylesheet" href="before-after.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome-animation@1.1.1/css/font-awesome-animation.min.css">
+
+  <!-- Image Picker Popup -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/NauCode/ImagePickerPopup@latest/src/ImagePickerPopup.min.css" />
+
 </head>
 <body>
+
+<div id="imagePickerContainer" 
+<!--
+data-path='["https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/orange-tree.jpg","https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/submerged.jpg","https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/look-out.jpg","https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/one-world-trade.jpg"]'>
+-->
+</div>
 
 <div id="compare-before-after" class="bal-container">
 
   <div class="wrapper bal-before">
     <div class="bal-before-inset">
-      <img src="./big-head.jpg"/>
+      <img id="the-image" src="./big-head.jpg"/>
       <div class="bal-beforePosition beforeLabel">
-        Before
+        <div>
+          <span onclick="imagePicker.openPopup();">Before</span>
+          <input id="the-url" type="hidden"/>
+          <span id="the-paste"><i class="fa-solid fa-wrench faa-wrench animated-hover"></i></span>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="wrapper bal-after">
     <img src="" style="display:none;"/>
-    <canvas id="canvas"></canvas>
+    <canvas id="the-canvas"></canvas>
     <div class="bal-afterPosition afterLabel">
       After
     </div>
@@ -47,10 +65,11 @@ scale = urlParams.get('scale') || scale;
 
 // ............................................................... Close Enough
 
-let img = new Image();
-img.onload = function(event) {
+let img = document.getElementById('the-image');
+let canvas = document.getElementById('the-canvas');
 
-// $('<img>').one('load', function(event) {
+img.crossOrigin = 'Anonymous';
+img.onload = function(event) {
 
   this.crossOrigin = 'Anonymous';
 
@@ -60,19 +79,12 @@ var style = new window.CloseEnough.style.Blobs({
     });
 
 new CloseEnough.Head(this, {
-    canvas: $('canvas')[0],
+    canvas: canvas,
     size: size,
-    maquette: {
-      angle: 45,
-      scale: ( scale / size )
-    },
+    maquette: { angle: 45, scale: ( scale / size ) },
     style: style
   }).render();
-//})[0].src = './big-head.jpg';
 }
-
-img.src = './big-head.jpg';
-img.crossOrigin = 'Anonymous';
 
 // ............................................................. Before & After
 
@@ -80,6 +92,78 @@ new BeforeAfter({
   id: '#compare-before-after'
 });
 
+// ...................................................................... Input
+
+let url = document.getElementById('the-url');
+url.focus();
+url.value = img.src;
+
+url.addEventListener('keyup', (e) => {
+  if ( e.key === 'Enter' || e.keyCode === 13 ) { 
+    updateUrl();
+  };
+});
+
+function uncached_url( url )
+{
+  var arg = Math.floor(Math.random() * 1000000);
+  var del = (url.includes('?'))? '&' : '?';
+  url += del + 'no-cache=' + arg;
+  console.log('uncached_url', url);
+  return url;
+}
+
+function updateUrl(){
+    
+  console.log( 'update url : ', url.value );
+
+  const test = new Image();
+  test,crossOrigin = 'Anonymous';
+  test.src = url.value;
+
+  test.onload =  () => { 
+    img.crossOrigin = 'Anonymous';
+    img.src = uncached_url(test.src); // triggers img.onload event
+  }; 
+  test.onerror = () => { 
+    console.error( "failed to load url" + test.src ); 
+    // ignore bad url ...
+    url.value = img.src;
+  };
+}
+
+let pasteButton = document.getElementById('the-paste');
+
+pasteButton.addEventListener('click', async () => {
+  
+  const text = await navigator.clipboard.readText();
+  url.value = text;
+
+  // updateUrl();
+  imagePicker.addImage(url.value,'');
+  imagePicker.registerClickListenerOnImages();
+});
+
+
+</script>
+
+<!-- Image Picker Popup -->
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script defer src="https://friconix.com/cdn/friconix.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/NauCode/ImagePickerPopup@latest/src/ImagePickerPopup.min.js"></script>
+
+<script>
+var imagePicker = new ImagePickerPopup("imagePickerContainer", 
+  function(src,alt){
+    console.log('popup selected :', src);
+    imagePicker.closePopup(true);
+    url.value = src;
+    updateUrl();
+  }, 
+  function(){
+    console.log('popup cancelled');
+  });
 </script>
 
 </body>

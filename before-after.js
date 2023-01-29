@@ -1,4 +1,7 @@
 class BeforeAfter {
+    
+    down = false;
+
     constructor(enteryObject) {
 
         const beforeAfterContainer = document.querySelector(enteryObject.id);
@@ -38,6 +41,9 @@ class BeforeAfter {
 
         //mouse move event listener
         beforeAfterContainer.addEventListener('mousemove', (e) => {
+            
+            if (!this.down) return; // process only drag mouse events
+
             let containerWidth = beforeAfterContainer.offsetWidth;
             widthChange = e.offsetX;
             let newWidth = widthChange * 100 / containerWidth;
@@ -47,7 +53,19 @@ class BeforeAfter {
                 afterText.setAttribute('style', "z-index:" + "1;");
                 handle.setAttribute('style', "left:" + newWidth + "%;");
             }
-        })
+            e.preventDefault();
+        });
 
+        beforeAfterContainer.addEventListener('mousedown', (e) => {
+            this.down =true;
+            beforeAfterContainer.style.cursor = 'move';
+            e.preventDefault();
+        });
+
+        beforeAfterContainer.addEventListener('mouseup', (e) => {
+            this.down =false;
+            beforeAfterContainer.style.cursor = 'default';
+            e.preventDefault();
+        });
     }
 }
